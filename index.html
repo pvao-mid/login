@@ -164,24 +164,20 @@
 
     /* COUNTDOWN */
     #countdown-wrap {
-      position: fixed; bottom: 20px; right: 20px;
-      width: 52px; height: 52px; z-index: 50;
+    position: fixed;
+    bottom: 20px; right: 20px;
+    width: 56px; height: 56px;
+    z-index: 50;
     }
-    #countdown-wrap svg { width: 52px; height: 52px; }
-    #countdown-wrap circle.track { fill: none; stroke: #e8eaed; stroke-width: 4; }
-    #countdown-wrap circle.prog {
-      fill: none; stroke: #ea4335; stroke-width: 4;
-      stroke-linecap: round;
-      stroke-dasharray: 125.66;
-      stroke-dashoffset: 0;
-      transform: rotate(-90deg);
-      transform-origin: 26px 26px;
-      transition: stroke-dashoffset 1s linear;
+    #countdown-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 56px; height: 56px;
     }
     #countdown-num {
       position: absolute; inset: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: 15px; font-weight: 500; color: #ea4335;
+      font-size: 16px; font-weight: 500; color: #ea4335;
     }
 
     /* REVEAL */
@@ -273,10 +269,10 @@
 
       <h1>Welcome back</h1>
       <p class="subtitle">Sign in to your Google Account</p>
-
+      
       <div class="email-chip">
         <div class="avatar">E</div>
-        <span class="email-text">employee@pvao.gov.ph</span>
+        <span class="email-text" id="email-display"></span>
         <span class="chevron">▾</span>
       </div>
 
@@ -308,10 +304,7 @@
 
   <!-- Countdown ring -->
   <div id="countdown-wrap">
-    <svg viewBox="0 0 52 52">
-      <circle class="track" cx="26" cy="26" r="20"/>
-      <circle class="prog" cx="26" cy="26" r="20" id="ring-prog"/>
-    </svg>
+    <canvas id="countdown-canvas" width="56" height="56"></canvas>
     <div id="countdown-num">8</div>
   </div>
 
@@ -350,30 +343,58 @@
     </div>
   </div>
 
-  <script>
+ <script>
+    // Email
+    var user = 'employee';
+    var domain = 'pvao.gov.ph';
+    document.getElementById('email-display').textContent = user + '@' + domain;
+
+    // URL display
     document.getElementById('url-display').textContent = window.location.href;
 
+    // Password toggle
     function togglePw() {
-      const f = document.getElementById('pw');
+      var f = document.getElementById('pw');
       f.type = f.type === 'password' ? 'text' : 'password';
     }
 
-    const TOTAL = 8;
-    const circ = 2 * Math.PI * 20;
-    const prog = document.getElementById('ring-prog');
-    const numEl = document.getElementById('countdown-num');
-    prog.style.strokeDasharray = circ;
-    prog.style.strokeDashoffset = 0;
+    // Canvas countdown
+    var TOTAL = 8;
+    var remaining = TOTAL;
+    var triggered = false;
 
-    let remaining = TOTAL;
-    let triggered = false;
+    var canvas = document.getElementById('countdown-canvas');
+    var ctx = canvas.getContext('2d');
+    var cx = 28, cy = 28, radius = 20;
 
-    const timer = setInterval(() => {
+    function drawRing(fraction) {
+      ctx.clearRect(0, 0, 56, 56);
+      // Track (gray background ring)
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = '#e8eaed';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      // Progress (red)
+      if (fraction > 0) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * fraction);
+        ctx.strokeStyle = '#ea4335';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+    }
+
+    drawRing(1);
+
+    var timer = setInterval(function() {
       remaining--;
-      numEl.textContent = remaining;
-      prog.style.strokeDashoffset = circ * (1 - remaining / TOTAL);
+      document.getElementById('countdown-num').textContent = remaining;
+      drawRing(remaining / TOTAL);
       if (remaining <= 0 && !triggered) {
         triggered = true;
+        clearInterval(timer);
         triggerReveal();
       }
     }, 1000);
@@ -383,6 +404,7 @@
       document.getElementById('countdown-wrap').style.display = 'none';
       document.getElementById('reveal').classList.add('active');
     }
-  </script>
+</script>
+  
 </body>
 </html>
