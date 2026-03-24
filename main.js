@@ -31,7 +31,7 @@ function togglePw() {
 // ── Countdown ring ───────────────────────────────────────────
 // var TOTAL = 8;
 // var remaining = TOTAL;
-// var triggered = false;
+var triggered = false;
 
 // var canvas = document.getElementById('countdown-canvas');
 // var ctx = canvas.getContext('2d');
@@ -64,12 +64,12 @@ function togglePw() {
 //   remaining--;
 //   document.getElementById('countdown-num').textContent = remaining;
 //   drawRing(remaining / TOTAL);
-//   if (remaining <= 0 && !triggered) {
-//     triggered = true;
-//     clearInterval(timer);
-//     triggerReveal();
-//   }
-// }, 1000);
+
+  if (!triggered) {
+    triggered = true;
+    triggerReveal();
+  }
+}, 1000);
 
 // ── Reveal overlay ───────────────────────────────────────────
 function triggerReveal() {
