@@ -186,7 +186,7 @@ body {
   background: rgba(0,0,0,0);
   animation: bdIn .5s ease forwards;
   overflow-y: auto;
-  padding: 24px 16px;
+  padding: 24px 16px 48px;
 }
 #reveal.active { display: flex; }
 @keyframes bdIn { to { background: rgba(0,0,0,.65); } }
